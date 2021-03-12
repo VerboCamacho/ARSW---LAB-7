@@ -1,7 +1,8 @@
 var app = (function(){
     var name = "";
     var blueprints = [];
-    var archivo = apiclient;
+    var blueprintname= "";
+
 
     getAuthor = function(){
         name = $("#name").val()
@@ -14,10 +15,11 @@ var app = (function(){
         name = newName
     }
 
+
     getNameAuthorBlueprints = function() {
             getAuthor();
             if (name !== "") {
-                archivo.getBlueprintsByAuthor(name, getData);
+                apiclient.getBlueprintsByAuthor(name, getData);
             } else {
                 alert("Debe ingresar algún nombre, vuelva a intentarlo")
             }
@@ -54,7 +56,10 @@ var app = (function(){
 
     drawCanva = function(puntos){
         getAuthor()
-        archivo.getBlueprintsByNameAndAuthor(puntos, name, bluep=>{ 
+        apiclient.getBlueprintsByNameAndAuthor(puntos, name, bluep=>{
+
+            $("#Current-blueprint").text("Current blueprint: "+bluep.name)
+            //console.log($("#Current-blueprint").text());
             var c = document.getElementById("canvas");
             var ctx = c.getContext("2d");
             ctx.clearRect(0, 0, 500, 400);
@@ -64,20 +69,32 @@ var app = (function(){
                 ctx.lineTo(bluep.points[i].x , bluep.points[i].y)
             }
             ctx.stroke();
+            const puntos = bluep.points;
+            event.updatepuntos(puntos)
+            event.init()
         })
     }
 
     printWorking = function(){
         console.log("Sirver Perra")
     }
+    saveUpdateBlueprint = function(){
+        console.log("sirve perra x2")
+    }
 
+    deleteBlueprint = function(){
+            console.log("sirve perra x2")
+    }
 
     return{
         getAuthor : getAuthor,
         changeName: changeName,
         getNameAuthorBlueprints: getNameAuthorBlueprints ,
         printWorking : printWorking,
-        drawCanva : drawCanva
+        drawCanva : drawCanva,
+        saveUpdateBlueprint : saveUpdateBlueprint,
+        deleteBlueprint : deleteBlueprint
+
     }
 
 

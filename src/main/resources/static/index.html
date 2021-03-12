@@ -25,6 +25,8 @@
     <script src="js/apimock.js"></script>
     <script src="js/app.js"></script>
     <script src="js/apiclient.js"></script>
+    <script src="js/event.js"></script>
+
 
 </head>
 <body>
@@ -61,7 +63,14 @@
                 </table>
             </div>
             <div class="col col-6">
+                <div>
+                    <a class="Current-blueprint" id="Current-blueprint">Current blueprint:</a>
+                </div>
                 <canvas id="canvas" width="400%" height="400%" style="border: 5px solid green;"></canvas>
+                <div>
+                    <button id="button-save" class="save" onclick="app.saveUpdateBlueprint()">Save/Update</button>
+                    <button id="button-delete"  class="delete" onclick="app.deleteBlueprint()" >Delete</button>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -73,6 +82,5 @@
             </div>
         </div>
     </div>
-
 </body>
 </html>
