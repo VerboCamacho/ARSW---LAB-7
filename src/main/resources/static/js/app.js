@@ -2,6 +2,7 @@ var app = (function(){
     var name = "";
     var blueprints = [];
     var blueprintname= "";
+    var createBluePrint = false;
 
 
     getAuthor = function(){
@@ -17,6 +18,7 @@ var app = (function(){
 
 
     getNameAuthorBlueprints = function() {
+            clearStuff();
             getAuthor();
             if (name !== "") {
                 apiclient.getBlueprintsByAuthor(name, getData);
@@ -24,6 +26,16 @@ var app = (function(){
                 alert("Debe ingresar algún nombre, vuelva a intentarlo")
             }
     }
+
+    function clearStuff() {
+            $("#Current-blueprint").text("Current blueprint:");
+            event.clearDraw();
+            const canvaB = document.getElementById("canvas");
+            const canvaContext = canvaB.getContext('2d');
+            canvaContext.clearRect(0, 0, canvaB.width, canvaB.height);
+            canvaContext.restore();
+            canvaContext.beginPath();
+        }
 
     getData = function(resp){
         $("#tableBlueprints tbody").empty();
@@ -59,6 +71,7 @@ var app = (function(){
         apiclient.getBlueprintsByNameAndAuthor(puntos, name, bluep=>{
 
             $("#Current-blueprint").text("Current blueprint: "+bluep.name)
+            blueprintname = bluep.name;
             //console.log($("#Current-blueprint").text());
             var c = document.getElementById("canvas");
             var ctx = c.getContext("2d");
@@ -75,15 +88,83 @@ var app = (function(){
         })
     }
 
-    printWorking = function(){
-        console.log("Sirver Perra")
-    }
-    saveUpdateBlueprint = function(){
-        console.log("sirve perra x2")
+    function saveAndUpdate(){
+        if(createBluePrint){
+            saveBluePrint();
+            createBluePrint = !createBluePrint;
+        }else {
+            updateBlueprint();
+        }
     }
 
-    deleteBlueprint = function(){
-            console.log("sirve perra x2")
+    function saveBluePrint(){
+
+        var bluepr = $("#newBluePrint").val();
+        var points = event.getPoints();
+        const promise = $.post({
+                    url: "/blueprints",
+                    contentType: "application/json",
+                    data: "{\"author\": \"" + name + "\",\"points\":" + JSON.stringify(points) + ",\"name\":" + "\"" + bluepr + "\"" + "}",
+                });
+                promise.then(function (data) {
+                        $.getScript("js/apiclient.js", function () {
+                            $.getScript("js/apiclient.js", function () {
+                                apiclient.getBlueprintsByAuthor(name, getData);
+                            });
+                        });
+                    }, function (error) {
+                        alert("No se pudo crear el blueprint")
+                    }
+                );
+    }
+
+    function createNew(){
+        clearStuff();
+        createBluePrint = true;
+    }
+
+    function newInfo(){
+        let bluepr = $("#newBluePrint").val();
+                $("#Current-blueprint").text("Current blueprint: " + bluepr);
+                let pointsList = [];
+                pointsList.push({x: 0, y: 0});
+                event.updatepuntos(pointsList)
+                event.init()
+    }
+
+    function updateBlueprint() {
+    console.log("Llega a update ")
+            var points = event.getPoints();
+            return $.ajax({
+                url: "/blueprints" + "/" + name + "/" + blueprintname,
+                type: 'PUT',
+                data: "{\"author\": \"" + name + "\",\"points\":" + JSON.stringify(points) + ",\"name\":" + "\"" + blueprintname + "\"" + "}",
+                contentType: "application/json",
+                success: function (data) {
+                    $.getScript("js/apiclient.js", function () {
+                        apiclient.getBlueprintsByAuthor(name, getData);
+                    });
+                }
+            });
+    }
+
+    function deleteBlueprint() {
+            return $.ajax({
+                url: "/blueprints" + "/" + name + "/" + blueprintname,
+                type: 'DELETE',
+                contentType: "application/json",
+                success: function (data) {
+                    $.getScript("js/apiclient.js", function () {
+                        clearStuff();
+                         apiclient.getBlueprintsByAuthor(name, getData);
+                    });
+                }
+            });
+    }
+
+
+    printWorking = function(){
+        console.log("Sirver Perra")
     }
 
     return{
@@ -92,7 +173,10 @@ var app = (function(){
         getNameAuthorBlueprints: getNameAuthorBlueprints ,
         printWorking : printWorking,
         drawCanva : drawCanva,
-        saveUpdateBlueprint : saveUpdateBlueprint,
+        updateBlueprint : updateBlueprint,
+        newInfo : newInfo,
+        createNew : createNew,
+        saveAndUpdate : saveAndUpdate,
         deleteBlueprint : deleteBlueprint
 
     }

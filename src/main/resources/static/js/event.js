@@ -14,12 +14,19 @@ const event = (function () {
                 context.moveTo(CordX, CordY);
                 CordX = e.clientX - offset.left;
                 CordY = e.clientY - offset.top;
+
                 context.lineTo(CordX, CordY);
                 context.stroke();
                 points.push({ x: CordX, y: CordY })
+
             }
        }
     }
+    function clearDraw(){
+            $("#canvas").click(function () {
+                return false;
+            });
+        }
 
     function init(){
         $("#canvas").click(makeDrawFunction());
@@ -28,12 +35,17 @@ const event = (function () {
             points = poins;
             CordX = points[points.length - 1].x
             CordY = points[points.length - 1].y
-        }
+    }
+    function getPoints() {
+            return points;
+    }
 
     return {
         makeDrawFunction: makeDrawFunction,
         init: init,
-        updatepuntos: updatepuntos
+        updatepuntos: updatepuntos,
+        clearDraw : clearDraw,
+        getPoints : getPoints
     }
 
 })();

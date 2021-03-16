@@ -9,7 +9,8 @@ var apiclient = (function () {
             promise.then(function (data) {
                     callback(data);
                 }, function (error) {
-                    alert("No existen datos del autor!")
+                     window.location.href = "/"
+                     alert("No existen datos")
                 }
             );
         },
